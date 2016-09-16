@@ -46,7 +46,7 @@ class PolyTreeNode
 
       return current_node if current_node.value == target_value
 
-      current_node.children.each do |child|
+      current_node.children.each do |child| # puts in child if current node is not target
         queue << child unless queue.include?(child) || results.include?(child)
       end
     end
