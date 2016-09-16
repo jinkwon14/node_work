@@ -13,46 +13,32 @@ class TicTacToeNode
 
   def losing_node?(evaluator)
     if @board.over?
-     if @board.winner == evaluator || @board.winner.nil?
-       return false
-     else
-       return true
-     end
+     return (@board.winner == evaluator || @board.winner.nil? ? false : true)
     else
-      if evaluator == next_mover_mark
-        return children.all? do |child_node|
-          child_node.losing_node?(evaluator)
-        end
-      elsif evaluator != next_mover_mark
-        return children.any? do |child_node|
-          child_node.losing_node?(evaluator)
-        end
-      end
+      evaluate(evaluator, :losing_node? )
     end
   end
 
   def winning_node?(evaluator)
     if @board.over?
-      if @board.winner == evaluator
-        return true
-      else
-        return false
-      end
+      return (@board.winner == evaluator ? true : false)
     else
-      if evaluator == next_mover_mark
-        return children.any? do |child_node|
-          child_node.winning_node?(evaluator)
-        end
-      elsif evaluator != next_mover_mark
-        return children.all? do |child_node|
-          child_node.winning_node?(evaluator)
-        end
-      end
+      evaluate(evaluator, :winning_node?)
     end
   end
 
-  # This method generates an array of all moves that can be made after
-  # the current move.
+  def evaluate(evaluator, method)
+    result_list = children.map do |child_node|
+      child_node.send(method, evaluator)
+    end
+
+    if evaluator == @next_mover_mark
+      result_list.all? { |child| child }
+    else
+      result_list.any? { |child| child }
+    end
+  end
+
   def children
     available_locations.map do |location|
       board_dup = @board.dup
@@ -75,6 +61,6 @@ class TicTacToeNode
   end
 
   def get_next_marker
-    MARKS.first == next_mover_mark ? MARKS.last : MARKS.first
+    MARKS.first == @next_mover_mark ? MARKS.last : MARKS.first
   end
 end
